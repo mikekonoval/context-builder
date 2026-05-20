@@ -1,6 +1,6 @@
 ---
 name: context-builder
-description: Use when starting a new project or onboarding to an existing one. Builds a `context/` folder at the project root with `idea/`, `architecture/`, `business/` subfolders that capture the project's intent, blueprint, and business context. Auto-detects whether the project is new (Mode A — interview from scratch) or has existing code (Mode B — analyze code then interview only the gaps). Triggers in user language (Russian/English): "собери context", "настрой context для проекта", "проанализируй проект и собери context", "context-builder", "build project context", "set up the second brain".
+description: Use ONLY when the user explicitly asks to build, set up, refresh, or audit a `context/` folder for a project — never on a generic "let's start a new project" / "помоги мне с проектом" request. Skill writes many files, creates folder structure, and modifies project CLAUDE.md, so it must not trigger on ambiguous "starting" intents. Builds `context/idea/` (intent), `context/architecture/` (blueprint), `context/business/` (commercial reality). Two modes auto-detected with user confirmation: Mode A (interview from scratch) or Mode B (analyze existing code, then interview only the gaps). Triggers (verbatim or close paraphrase): "собери context", "обнови context", "настрой context для проекта", "проанализируй проект и собери context", "context-builder", "build project context", "refresh project context", "set up the second brain", «добавь LIVE-метрику», «аудит business».
 ---
 
 # context-builder
@@ -25,7 +25,7 @@ project-root/
 
 This skill orchestrates three stage files. Do not inline their content here — read each when its phase is active:
 
-- `stages/idea.md` — 6 stages, populates `context/idea/`
+- `stages/idea.md` — 5 stages, populates `context/idea/`
 - `stages/architecture.md` — 13 stages, populates `context/architecture/`
 - `stages/business.md` — 11 stages, populates `context/business/`
 
@@ -50,6 +50,13 @@ Before starting any phase, decide between Mode A and Mode B:
 Also scan `context/` state:
 - Folder doesn't exist → build all three phases (idea → architecture → business).
 - Some subfolders exist → ask user: «Вижу частично собранный context. Что обновлять — конкретную подпапку или всё?»
+- All three subfolders exist and look filled → ask: «Context уже собран. Хочешь обновить конкретную фазу, пересобрать с нуля или прогнать аудит?» Никогда не пересобирай молча.
+
+**Idempotency policy.** Повторный запуск не должен портить уже собранный контекст:
+- Перед перезаписью существующего файла — прочитай его и предложи пользователю diff (что было / что станет). Не перезаписывай молча.
+- Файлы с ручными правками пользователя (без маркеров `[авто-выведено: ...]` и без шаблонных заглушек типа «заполнить позже») — НЕ трогай без явного подтверждения.
+- В `CLAUDE.md` проекта: если секция «Project context» уже есть — обнови её содержимое, не дублируй секцию. Если есть похожая по смыслу секция под другим названием — спроси, объединить или оставить рядом.
+- При перезапуске одной фазы (например, «обнови business») — сохраняй файлы других фаз нетронутыми.
 
 ---
 
@@ -59,13 +66,12 @@ Walk through three phases sequentially. Between phases ask: «Продолжае
 
 ### Phase 1: idea/
 
-Read `stages/idea.md` and execute its 6 stages in order:
+Read `stages/idea.md` and execute its 5 stages in order:
 1. Structure + 01-idea through 04-mvp via interview
 2. Deep research → 05-research/
 3. Principles → 06-principles/
 4. **Premortem → 07-risks/** — dispatch as a subagent (Task tool) with a clean context window. Main session continues after subagent reports back. Не инструктируй пользователя открывать новый чат.
-5. Stubs 08-11
-6. Wikilinks
+5. Wikilinks
 
 ### Phase 2: architecture/
 
@@ -113,6 +119,18 @@ Read in this order:
 5. Existing `CLAUDE.md` in project root (previous decisions)
 6. Any architecture docs (`docs/`, `ARCHITECTURE.md`)
 
+**Ignore unconditionally** (не читай, не индексируй, не упоминай в выводах):
+- `node_modules/`, `vendor/`, `.venv/`, `venv/`, `env/`, `__pycache__/`
+- `.git/`, `.svn/`, `.hg/`
+- `dist/`, `build/`, `out/`, `.next/`, `.nuxt/`, `.parcel-cache/`, `target/` (Rust/Java build), `bin/`, `obj/`
+- `*.lock`, `*.lockfile`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `poetry.lock`, `Cargo.lock`, `go.sum`
+- `*.min.js`, `*.min.css`, `*.bundle.js`, `*.map`
+- `coverage/`, `.nyc_output/`, `.pytest_cache/`, `.mypy_cache/`, `.ruff_cache/`
+- `.DS_Store`, `Thumbs.db`, `*.log`, `*.pyc`, `*.class`
+- Любые сгенерированные файлы (`*.generated.*`, `*-generated.*`)
+
+Если корень проекта больше 200 файлов после игнора — не читай файлы скопом; ограничься top-level структурой и main entrypoint'ом. Подробное чтение делегируй Explore-агенту узкой задачей по конкретной фазе.
+
 Summarize internally what you extracted: idea hints, audience hints, tech stack, key entities. Don't write this summary as a file — it's working memory for the stages.
 
 ### Phase execution (Mode B)
@@ -124,6 +142,8 @@ Walk through the same three phases as Mode A (idea → architecture → business
 - For each stage's "Derive from upstream" section, extend it with: also derive from the pre-ingestion context where applicable.
 
 If a field is partially filled (some facts from code, others missing) — keep the auto-filled parts and ask only about the rest.
+
+**Lifecycle of `[авто-выведено: <источник>]` markers.** Маркер — временный, на draft-этап. Когда пользователь подтвердил факт (явно сказал «верно» / отредактировал / прокомментировал), убирай маркер из основного тела файла. Если хочется сохранить trace источника — переноси его в footnote/комментарий в конце файла (например, `<!-- источник: src/auth/login.ts:42 -->`), но не в основном повествовании. К концу полной фазы маркеры в основном тексте остаются только на полях, которые пользователь явно пометил как «вернёмся позже».
 
 ---
 
@@ -165,6 +185,15 @@ Or update a single stage within a phase:
 - «обнови `context/architecture/06-стек/`» → run Stage 9 of `stages/architecture.md`
 - etc.
 
+**Precondition checks before running an individual stage.** Многие стейджи читают upstream-папки (например, business Stage 5 читает `context/idea/07-risks/` и `context/idea/04-mvp/`):
+- Если upstream существует и заполнен — запускай стейдж как обычно.
+- Если upstream отсутствует или пуст — НЕ запускай стейдж. Сообщи пользователю чего не хватает и предложи варианты:
+  1. Собрать недостающую upstream-фазу сначала (рекомендуется)
+  2. Запустить с пометкой `[заполнить позже]` на полях, требующих недостающего upstream (и оставить эти поля для последующего прохода)
+  3. Отменить операцию
+
+Дождись выбора пользователя, не действуй на догадках.
+
 ---
 
 ## Operational triggers (post-build, on demand)
@@ -188,6 +217,6 @@ These don't build new sections — they maintain existing content:
 
 5. **Subagents for premortems and any "fresh context" need.** Both Stage 4 of idea and Stage 10 of architecture must run in an isolated context — otherwise the main agent is attached to the work it just produced and softens criticism. Dispatch via Task tool (subagent), never instruct the user to open a new chat window. The same rule applies anywhere in the skill that requires uncontaminated context: spawn a subagent, don't bounce the user out.
 
-6. **Russian for user-facing content, English for structural markers.** Interview questions, file content, summaries → Russian. Stage names, section headers (Read / Create / Derive / Ask / When done), file/folder paths → English.
+6. **Russian for user-facing content, English for structural markers — но НЕ переводи существующие пути.** Interview questions, file content, summaries → Russian. Stage names и section headers внутри stage-файлов (Read / Create / Derive / Ask / When done) → English. Имена файлов и папок в `context/architecture/` исторически на русском (`01-обзор/`, `02-ядро/`, `пресс-релиз.md`, `безопасность.md` и т.д.) — оставляй как есть, никогда не переводи на английский на ходу. Ссылки и wikilinks тоже сохраняют исходный регистр и язык.
 
 7. **Don't apply destructive changes without confirmation.** Audit (business Stage 11) finds problems but never auto-fixes — always show the report and ask which fixes to apply.

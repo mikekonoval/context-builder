@@ -1,8 +1,8 @@
 # idea.md — stages for context-builder skill
 
-Stages that populate `context/idea/`. Stages 1-5 normally execute in sequence as part of the skill's main flow (Stage 4 dispatches a subagent via Task tool for isolated context). Stage 6 is post-build:
+Stages that populate `context/idea/`. Stages 1-4 normally execute in sequence as part of the skill's main flow (Stage 4 dispatches a subagent via Task tool for isolated context). Stage 5 is post-build:
 
-- Stage 6: wikilinks graph across files
+- Stage 5: wikilinks graph across files
 
 Mode B (existing project) note: when the skill detects existing code, the SKILL.md router first ingests README, source structure, package metadata. Each stage below then uses that context in addition to its own upstream reads, and skips interview questions for facts already extracted.
 
@@ -69,7 +69,17 @@ Then launch a 6th synthesizing subagent. Fill (на русском):
 - `05-research/what-to-avoid.md` — где у них болит, почему провалились
 - `05-research/delta.md` — чем моя идея уникальна
 
-Каждый файл — 1-2 страницы. Только применимое.
+**Citation rules — обязательны:**
+- Каждый факт о конкретной компании, продукте или проекте — с источником: URL + дата обращения (`источник: https://… (проверено YYYY-MM-DD)`).
+- Цифры (выручка, привлечённые раунды, размер команды) — только из named sources, не «по слухам».
+- Если факт нельзя подтвердить источником — помечай его `[непроверено]` или вообще не включай.
+- Не пиши «компания X работает над тем-то» без ссылки. Это галлюцинация.
+
+**Fallback если deep research недоступен:**
+- Если subagent'ы не могут выйти в web (ограничения окружения, нет инструментов) — НЕ выдумывай. Создай `05-research/` файлы со скелетом и пометкой `[требует ручного исследования — web недоступен]` в каждом разделе. Сообщи пользователю и предложи: (а) дать ссылки на источники вручную, (б) запустить ресёрч в окружении с web-доступом, (в) пропустить фазу research и идти на 06-principles с пометкой что delta не проверена.
+- Никогда не заполняй analogs.md / competitors информацией «из памяти модели». Память на актуальные компании ненадёжна и устаревает.
+
+Каждый файл — 1-2 страницы. Только применимое + проверяемое.
 
 When done: show tree of `context/idea/05-research/` and ask what to refine.
 
@@ -134,27 +144,7 @@ When done: show tree of `context/idea/07-risks/` and ask what to refine.
 
 ---
 
-## Stage 5: stubs for next iteration → 08-11
-
-Только после того, как Stage 4 пройден и идея прошла валидацию рисков.
-
-Create stubs in `context/idea/`:
-
-```
-context/idea/
-├── 08-architecture/{README.md, agent-loop.md, memory-model.md, permissions.md, triggers.md, integrations.md, tech-stack.md, data-flow.md}
-├── 09-decisions/{README.md, tech-decisions.md, product-decisions.md, trade-offs.md}
-├── 10-capabilities/{README.md, analytics.md, communications.md, operations.md, product-dev.md, strategy.md}
-└── 11-phases/{README.md, milestones.md}
-```
-
-Each file: H1 with section name + empty section «Черновик». Не заполняй — это якоря для следующей фазы (architecture.md).
-
-When done: show updated tree of `context/idea/`.
-
----
-
-## Stage 6: ✨ wikilinks graph
+## Stage 5: ✨ wikilinks graph
 
 Read all of `context/idea/`.
 
