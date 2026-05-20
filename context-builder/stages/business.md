@@ -106,7 +106,7 @@ Create `context/business/goals/` with four files:
 
 **Derive from upstream:**
 - `annual.md`: большая цель — из `context/idea/02-vision/` (success-criteria) и `context/idea/04-mvp/` (success-metrics). Сформулируй конкретно: «к концу года — выручка $X / DAU Y / N клиентов» — то, что применимо к проекту.
-- `kpi.md`: список метрик из `context/idea/02-vision/` и `context/idea/04-mvp/`. Конкретные числа маркируй `[LIVE: slug-метрики]` — подтянем через Stage 10.
+- `kpi.md`: список метрик из `context/idea/02-vision/` и `context/idea/04-mvp/`. Операционные значения (которые меняются чаще раза в месяц) маркируй `[LIVE: slug-метрики]` — подтянем через Stage 10. Плановые годовые/квартальные цели и формулы — без маркера. Критерии — в Stage 10.
 
 **Ask (one question at a time, with 3-4 options):**
 - `quarterly.md`: 3-4 квартальные цели (тактика — что закрываем за квартал)
@@ -140,7 +140,7 @@ Create `context/business/economics/` with four files:
 - `costs.md`: фиксированные расходы (зарплаты, инфра, маркетинг) и переменные
 - `forecast.md`: цель по выручке / расходам на 3-6 месяцев вперёд
 
-Конкретные числа маркируй `[LIVE: slug-метрики]` — подтянем через Stage 10.
+Операционные числа (текущая выручка/расходы за период, актуальная маржа) маркируй `[LIVE: slug-метрики]` — подтянем через Stage 10. Формулы (определение CAC/LTV) и плановые величины — без маркера. Критерии — в Stage 10.
 
 If any data is missing — ask a clarifying question.
 
@@ -164,7 +164,7 @@ Create `context/business/marketing/` with four files:
 
 **Ask (one question at a time, with 3-4 options):**
 - `channels.md`: какие каналы используешь и их статус
-- `funnel.md`: метрики каждого этапа воронки. Конкретные числа маркируй `[LIVE: ...]`.
+- `funnel.md`: метрики каждого этапа воронки. Текущие значения (snapshot за последний период) маркируй `[LIVE: ...]`; целевые плановые значения этапов — без маркера.
 - `content.md` (раздел «контент-план»): какие форматы и темы публикуешь, частота
 
 If any data is missing — ask a clarifying question.

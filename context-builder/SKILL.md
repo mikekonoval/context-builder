@@ -52,11 +52,12 @@ Also scan `context/` state:
 - Some subfolders exist → ask user: «Вижу частично собранный context. Что обновлять — конкретную подпапку или всё?»
 - All three subfolders exist and look filled → ask: «Context уже собран. Хочешь обновить конкретную фазу, пересобрать с нуля или прогнать аудит?» Никогда не пересобирай молча.
 
-**Idempotency policy.** Повторный запуск не должен портить уже собранный контекст:
-- Перед перезаписью существующего файла — прочитай его и предложи пользователю diff (что было / что станет). Не перезаписывай молча.
-- Файлы с ручными правками пользователя (без маркеров `[авто-выведено: ...]` и без шаблонных заглушек типа «заполнить позже») — НЕ трогай без явного подтверждения.
-- В `CLAUDE.md` проекта: если секция «Project context» уже есть — обнови её содержимое, не дублируй секцию. Если есть похожая по смыслу секция под другим названием — спроси, объединить или оставить рядом.
-- При перезапуске одной фазы (например, «обнови business») — сохраняй файлы других фаз нетронутыми.
+**Idempotency policy.** Повторный запуск не должен портить уже собранный контекст. Принцип: подтверждение на уровне стейджа/фазы, не на уровне каждого файла.
+
+- **Перед запуском stage'а или фазы, которые будут перезаписывать существующие файлы** — покажи плановый список одним сообщением: «создаю N файлов: ..., перезаписываю M файлов: ..., оставляю K файлов нетронутыми: ...». Спроси единое «да / нет / показать diff конкретного файла». Не показывай diff по каждому файлу — это превратит сессию в бесконечные подтверждения. Wikilinks-стейдж в типовом случае меняет десятки файлов — он не должен спрашивать про каждый.
+- **Файлы с ручными правками** (без `[авто-выведено: ...]` и без шаблонных заглушек) — детектируй до начала стейджа. Включай их в plan как «оставлю нетронутыми, поверх не пишу». Если ручной файл КОНФЛИКТУЕТ с тем, что стейдж должен записать (например, файл существует с другим содержанием по той же теме) — упомяни конфликт в plan и спроси: затереть, оставить как есть, или открыть diff. По умолчанию — оставить.
+- **`CLAUDE.md` проекта:** если секция «Project context» уже есть — обнови её содержимое, не дублируй секцию. Если есть похожая по смыслу секция под другим названием — спроси, объединить или оставить рядом.
+- **При перезапуске одной фазы** (например, «обнови business») — сохраняй файлы других фаз нетронутыми. Plan показывай только для затрагиваемой фазы.
 
 ---
 
@@ -187,12 +188,12 @@ Or update a single stage within a phase:
 
 **Precondition checks before running an individual stage.** Многие стейджи читают upstream-папки (например, business Stage 5 читает `context/idea/07-risks/` и `context/idea/04-mvp/`):
 - Если upstream существует и заполнен — запускай стейдж как обычно.
-- Если upstream отсутствует или пуст — НЕ запускай стейдж. Сообщи пользователю чего не хватает и предложи варианты:
+- Если upstream отсутствует или пуст — **поставь стейдж на паузу и спроси пользователя**, как поступить:
   1. Собрать недостающую upstream-фазу сначала (рекомендуется)
-  2. Запустить с пометкой `[заполнить позже]` на полях, требующих недостающего upstream (и оставить эти поля для последующего прохода)
+  2. Degraded run: запустить стейдж с пометкой `[заполнить позже]` на полях, требующих недостающего upstream
   3. Отменить операцию
 
-Дождись выбора пользователя, не действуй на догадках.
+Если пользователь явно выбрал degraded run (вариант 2) — запускай. Без выбора пользователя не действуй на догадках.
 
 ---
 
@@ -213,7 +214,7 @@ These don't build new sections — they maintain existing content:
 
 3. **Wikilinks back to upstream.** Stages routinely reference `context/idea/` and `context/architecture/` files via `[[path]]`. Wikilinks-finalization stage at the end of each phase wires this graph.
 
-4. **`[LIVE: slug]` for hardcoding-prone numbers.** Concrete numbers (revenue, DAU, prices, funnel metrics) get marked `[LIVE: slug-name]`. Registry lives in `context/business/economics/live-metrics.md` — created on demand by Stage 10 of business.
+4. **`[LIVE: slug]` only for operational changing metrics.** Operational numbers that update faster than once a month (current revenue, DAU, period conversions, funnel snapshots) get marked `[LIVE: slug-name]`. Static values (tariff prices, period plans, quarterly/annual targets, unit-economics formulas) stay as plain numbers — no marker. Registry lives in `context/business/economics/live-metrics.md` — created on demand by Stage 10 of business. **Full criteria authoritative in Stage 10**; if other stages and Stage 10 ever disagree, Stage 10 wins.
 
 5. **Subagents for premortems and any "fresh context" need.** Both Stage 4 of idea and Stage 10 of architecture must run in an isolated context — otherwise the main agent is attached to the work it just produced and softens criticism. Dispatch via Task tool (subagent), never instruct the user to open a new chat window. The same rule applies anywhere in the skill that requires uncontaminated context: spawn a subagent, don't bounce the user out.
 

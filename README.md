@@ -55,8 +55,8 @@ project-root/
 context-builder/
 ├── SKILL.md                          ← entry-point: frontmatter, mode detection, оркестрация
 └── stages/
-    ├── idea.md                       ← 6 stages для context/idea/
-    ├── architecture.md               ← 13 stages для context/architecture/
+    ├── idea.md                       ← 5 stages для context/idea/ (4 сборка + 1 wikilinks)
+    ├── architecture.md               ← 13 stages для context/architecture/ (12 сборка + 1 wikilinks)
     └── business.md                   ← 11 stages для context/business/ (8 сборка + 1 wikilinks + 2 операционных)
 ```
 
