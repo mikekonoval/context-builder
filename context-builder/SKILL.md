@@ -198,7 +198,7 @@ User can update one phase without rebuilding everything:
 
 Or update a single stage within a phase:
 - «обнови `context/business/economics/`» → run Stage 5 of `stages/business.md`
-- «обнови `context/architecture/06-стек/`» → run Stage 9 of `stages/architecture.md`
+- «обнови `context/architecture/05-стек/`» → run Stage 9 of `stages/architecture.md`
 - etc.
 
 **Precondition checks before running an individual stage.** Многие стейджи читают upstream-папки (например, business Stage 5 читает `context/idea/07-risks/` и `context/idea/04-mvp/`):
