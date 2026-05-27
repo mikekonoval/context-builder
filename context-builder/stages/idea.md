@@ -150,7 +150,7 @@ Read all of `context/idea/`.
 
 Stitch wikilinks between files (knowledge-graph principle):
 - `context/idea/README.md` and each subfolder's `README.md` — link to all sections and files inside
-- Each file mentioning another topic — link via `[[path]]`
+- Each file mentioning another topic — link via a relative Markdown link `[label](relative/path)` (path relative to the linking file)
 - Add any other meaningful missing links
 
 When done: count links. Files with 0 links — flag as orphans, explain whether they're needed.

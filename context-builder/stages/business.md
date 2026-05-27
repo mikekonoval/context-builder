@@ -214,20 +214,20 @@ Read all of `context/business/`.
 
 Stitch wikilinks between files (knowledge-graph principle):
 - `context/business/INDEX.md` links to all subfolders and key files inside.
-- Each file mentioning another topic — link via `[[path]]`.
+- Each file mentioning another topic — link via a relative Markdown link `[label](relative/path)` (path relative to the linking file).
 - Mandatory cross-references (skip if target doesn't exist):
-  - `company/about.md` → `[[context/idea/01-idea/]]`
-  - `company/values.md` → `[[context/idea/06-principles/]]`
-  - `products/overview.md` → `[[context/architecture/01-обзор/пресс-релиз.md]]`
-  - `products/product-N.md` → `[[context/architecture/02-ядро/способности/]]`
-  - `audience/avatar.md` and `audience/segments.md` → `[[context/idea/03-audience/]]`
+  - `company/about.md` → `[01-idea](../../idea/01-idea/)`
+  - `company/values.md` → `[06-principles](../../idea/06-principles/)`
+  - `products/overview.md` → `[пресс-релиз.md](../../architecture/01-обзор/пресс-релиз.md)`
+  - `products/product-N.md` → `[способности/](../../architecture/02-ядро/способности/)`
+  - `audience/avatar.md` and `audience/segments.md` → `[03-audience](../../idea/03-audience/)`
   - `audience/avatar.md` ↔ `marketing/content.md` (на кого пишем)
   - `audience/objections.md` ↔ `marketing/content.md` (что отвечаем на возражения)
   - `goals/kpi.md` ↔ `economics/unit-economics.md`, `economics/revenue.md` (метрики экономики)
   - `goals/kpi.md` ↔ `marketing/funnel.md` (метрики воронки)
-  - `marketing/competitors.md` → `[[context/idea/05-research/]]`
-  - `marketing/content.md` → `[[context/architecture/02-ядро/характер.md]]`, `assets/brand-guidelines.md`
-  - `assets/brand-guidelines.md` → `[[context/architecture/02-ядро/характер.md]]`
+  - `marketing/competitors.md` → `[05-research](../../idea/05-research/)`
+  - `marketing/content.md` → `[характер.md](../../architecture/02-ядро/характер.md)`, `[brand-guidelines.md](../assets/brand-guidelines.md)`
+  - `assets/brand-guidelines.md` → `[характер.md](../../architecture/02-ядро/характер.md)`
 - If `context/business/economics/live-metrics.md` exists — every `[LIVE: slug]` occurrence in business files links to section `<slug>` inside `live-metrics.md`.
 - Add any other meaningful missing links.
 

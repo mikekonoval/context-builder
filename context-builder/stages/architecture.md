@@ -110,7 +110,7 @@ Fill `context/architecture/02-ядро/характер.md` по шаблону.
 # Характер
 
 ## База
-[[context/idea/01-idea/]] · [[context/idea/03-audience/]] · [[context/idea/06-principles/]]
+[Идея](../../idea/01-idea/) · [Аудитория](../../idea/03-audience/) · [Принципы](../../idea/06-principles/)
 
 ## Тон коммуникации
 
@@ -620,7 +620,7 @@ Read all of `context/architecture/`.
 
 Stitch wikilinks between files (knowledge-graph principle):
 - `context/architecture/README.md` and each subfolder's `README.md` (если есть) — link to all sections and files inside
-- Each file mentioning another topic — link via `[[path]]`
+- Each file mentioning another topic — link via a relative Markdown link `[label](relative/path)` (path relative to the linking file)
 - **Mandatory cross-references:**
   - `карта-системы.md` → `02-ядро/`, `03-данные/`, `04-потоки/`
   - `права-доступа.md` ↔ `безопасность.md`

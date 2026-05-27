@@ -227,7 +227,7 @@ These don't build new sections — they maintain existing content:
 
 2. **Don't hallucinate.** If a field can't be filled from upstream or interview — write `[заполнить позже]`, not invented content.
 
-3. **Wikilinks back to upstream.** Stages routinely reference `context/idea/` and `context/architecture/` files via `[[path]]`. Wikilinks-finalization stage at the end of each phase wires this graph.
+3. **Wikilinks back to upstream.** Stages routinely reference `context/idea/` and `context/architecture/` files via relative Markdown links `[label](relative/path)` (path relative to the linking file). Wikilinks-finalization stage at the end of each phase wires this graph.
 
 4. **`[LIVE: slug]` only for operational changing metrics.** Operational numbers that update faster than once a month (current revenue, DAU, period conversions, funnel snapshots) get marked `[LIVE: slug-name]`. Static values (tariff prices, period plans, quarterly/annual targets, unit-economics formulas) stay as plain numbers — no marker. Registry lives in `context/business/economics/live-metrics.md` — created on demand by Stage 10 of business. **Full criteria authoritative in Stage 10**; if other stages and Stage 10 ever disagree, Stage 10 wins.
 
